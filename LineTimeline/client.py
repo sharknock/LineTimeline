@@ -58,15 +58,18 @@ class LineTimeline:
             print(e)
 
 
-    def createPost(self, viewType=0, text=None):
+    def getFeed(self, postLimit=10, commentLimit=2, likeLimit=20):
+        data = {"postLimit": postLimit, "commentLimit": commentLimit, "likeLimit": likeLimit}
+        r = requests.get(url=self.host + "feed/list.json", headers=self.headers, params=data)
+        return r.json()
+
+    def createPost(self, viewType, text):
         if viewType == 0:
             viewType = "NONE"
         elif viewType == 1:
             viewType = "FRIEND"
         elif viewType == 2:
             viewType = "ALL"
-        if text == None:
-            text == ""
         json = {"postInfo": {"readPermission": {"type": viewType,}},"contents": {"text": text,"stickers": [],"media": [],"contentsStyle": {"textStyle": {},"stickerStyle": {}}}}
         r = requests.post(url=self.host + "post/create.json", headers=self.headers, json=json)
         return r.json()
@@ -90,10 +93,10 @@ class LineTimeline:
         if text == None:
             text = ""
         json = {"contentId": postId, "commentText": text}
-        r = requests.post(url = self.host + "comment/create.json", headers=self.headers, json=json)
+        r = requests.post(url=self.host + "comment/create.json", headers=self.headers, json=json)
         return r.json()
 
     def deleteComment(self, postId, commentId):
         json = {"postId": postId, "commentId": commentId}
-        r = requests.post(url = self.host + "comment/delete.json", headers=self.headers, json=json)
+        r = requests.post(url=self.host + "comment/delete.json", headers=self.headers, json=json)
         return r.json()
